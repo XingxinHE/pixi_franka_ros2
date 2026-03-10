@@ -2,7 +2,7 @@
 authors = ["Daniel San José Pro <42489409+danielsanjosepro@users.noreply.github.com>"]
 name = "franka_ros2_pixi"
 version = "0.1.0"
-channels = ["https://fast.prefix.dev/conda-forge"]
+channels = ["robostack-humble", "conda-forge"]
 platforms = ["linux-64"]
 
 [activation]
@@ -11,7 +11,7 @@ scripts = ["scripts/set_ros_env.sh", "install/setup.bash"]
 [dependencies]
 python = "*"
 compilers = "*"
-cmake = "*"
+cmake = ">=3.26,<4"
 pkg-config = "*"
 make = "*"
 ninja = "*"
@@ -20,40 +20,38 @@ ninja = "*"
 libgl-devel = "*"
 
 [environments]
-jazzy = { features = ["jazzy", "dev", "extra"] }
-jazzy-crisp = { features = ["jazzy", "dev", "extra", "crisp"] }
+humble = { features = ["humble", "dev", "extra", "crisp"] }
 
-# jazzy
-[feature.jazzy]
-channels = ["https://prefix.dev/robostack-jazzy"]
+# humble
+[feature.humble]
+channels = ["https://prefix.dev/robostack-humble"]
 
-[feature.jazzy.dependencies]
+[feature.humble.dependencies]
 colcon-common-extensions = "*"
 pinocchio = ">=3.7.0,<4"
 poco = ">=1.14.2,<2"
-ros-jazzy-ament-clang-format = ">=0.17.2,<0.18"
-ros-jazzy-desktop = "*"
-ros-jazzy-joint-state-publisher = ">=2.4.0,<3"
-ros-jazzy-moveit-core = ">=2.12.3,<3"
-ros-jazzy-moveit-kinematics = ">=2.12.3,<3"
-ros-jazzy-moveit-planners-ompl = ">=2.12.3,<3"
-ros-jazzy-moveit-ros-move-group = ">=2.12.3,<3"
-ros-jazzy-rmw-cyclonedds-cpp = "*"
-ros-jazzy-rmw-zenoh-cpp = "*"
-ros-jazzy-ros2-control = "*"
-ros-jazzy-ros2-control-cmake = ">=0.2.1,<0.3"
-ros-jazzy-ros2-controllers = "*"
-ros-jazzy-xacro = ">=2.0.13,<3"
+ros-humble-ament-clang-format = "*"
+ros-humble-desktop = "*"
+ros-humble-joint-state-publisher = "*"
+ros-humble-moveit-core = "*"
+ros-humble-moveit-kinematics = "*"
+ros-humble-moveit-planners-ompl = "*"
+ros-humble-moveit-ros-move-group = "*"
+ros-humble-rmw-cyclonedds-cpp = "*"
+ros-humble-ros2-control = "*"
+ros-humble-ros2-control-cmake = "*"
+ros-humble-ros2-controllers = "*"
+ros-humble-xacro = "*"
 rosdep = "*"
 
-[feature.jazzy.tasks]
-clone = "git clone https://github.com/frankarobotics/franka_ros2.git -b jazzy src/franka_ros2 && git clone https://github.com/frankarobotics/franka_description.git src/franka_description && git clone --recurse-submodules https://github.com/frankarobotics/libfranka.git src/libfranka"
+[feature.humble.tasks]
+clone = "bash scripts/clone_sources.sh"
+verify-sources = "bash scripts/verify_sources.sh"
 update-libfranka = "cd src/libfranka && git submodule update --init --recursive && cd ../../"
 apply-patches = "bash scripts/apply_patches.sh"
 ignore-gazebo = "touch src/franka_ros2/franka_gazebo/COLCON_IGNORE"
-build = "colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -Wno-dev"
-clone-crisp = "git clone https://github.com/utiasdsl/crisp_controllers.git src/crisp_controllers"
-setup = { depends-on = ["clone", "update-libfranka", "apply-patches", "ignore-gazebo", "build"] }
+build = "colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DBUILD_TESTS=OFF -DPython_ROOT_DIR=$CONDA_PREFIX -DPython3_ROOT_DIR=$CONDA_PREFIX -DPython_FIND_STRATEGY=LOCATION -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -Wno-dev"
+setup = { depends-on = ["clone", "update-libfranka", "verify-sources", "apply-patches", "ignore-gazebo", "build"] }
 franka = "ros2 launch scripts/launch/franka.launch.py"
 
 [feature.crisp.tasks]

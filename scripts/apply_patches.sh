@@ -1,57 +1,60 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Script to apply patches by copying files from patches/ to src/
+# Apply tracked patch files by copying them over existing upstream files.
+# This script is strict on purpose: every patch file must map to an existing target file.
 
-set -e  # Exit on error
+set -euo pipefail
 
 PATCHES_DIR="patches"
 SRC_DIR="src"
 
 # Color codes for output
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 echo "Applying patches from ${PATCHES_DIR}/ to ${SRC_DIR}/"
 echo "================================================"
 
-# Check if patches directory exists
 if [ ! -d "${PATCHES_DIR}" ]; then
-    echo -e "${RED}Error: ${PATCHES_DIR}/ directory not found${NC}"
-    exit 1
+  echo -e "${RED}Error: ${PATCHES_DIR}/ directory not found${NC}"
+  exit 1
 fi
 
-# Iterate through each repository in patches/
+if [ ! -d "${SRC_DIR}" ]; then
+  echo -e "${RED}Error: ${SRC_DIR}/ directory not found${NC}"
+  exit 1
+fi
+
+patch_count=0
+
 for repo in "${PATCHES_DIR}"/*; do
-    if [ -d "${repo}" ]; then
-        repo_name=$(basename "${repo}")
-        target_dir="${SRC_DIR}/${repo_name}"
+  [ -d "${repo}" ] || continue
 
-        # Check if target repository exists
-        if [ ! -d "${target_dir}" ]; then
-            echo -e "${YELLOW}Warning: Target directory ${target_dir}/ not found, skipping ${repo_name}${NC}"
-            continue
-        fi
+  repo_name="$(basename "${repo}")"
+  target_dir="${SRC_DIR}/${repo_name}"
 
-        echo -e "${GREEN}Processing ${repo_name}...${NC}"
+  if [ ! -d "${target_dir}" ]; then
+    echo -e "${RED}Error: Target repository ${target_dir}/ not found${NC}"
+    exit 1
+  fi
 
-        # Find all files in the patch directory and copy them
-        while IFS= read -r -d '' file; do
-            # Get relative path from patches/repo_name/
-            relative_path="${file#${repo}/}"
-            target_file="${target_dir}/${relative_path}"
-            target_file_dir=$(dirname "${target_file}")
+  echo -e "${GREEN}Processing ${repo_name}...${NC}"
 
-            # Create target directory if it doesn't exist
-            mkdir -p "${target_file_dir}"
+  while IFS= read -r -d '' file; do
+    relative_path="${file#${repo}/}"
+    target_file="${target_dir}/${relative_path}"
 
-            # Copy the file
-            cp "${file}" "${target_file}"
-            echo "  Copied: ${relative_path}"
-        done < <(find "${repo}" -type f -print0)
+    if [ ! -f "${target_file}" ]; then
+      echo -e "${RED}Error: Missing target file for patch: ${target_file}${NC}"
+      exit 1
     fi
+
+    cp "${file}" "${target_file}"
+    patch_count=$((patch_count + 1))
+    echo "  Copied: ${relative_path}"
+  done < <(find "${repo}" -type f -print0 | sort -z)
 done
 
 echo -e "${GREEN}================================================${NC}"
-echo -e "${GREEN}Patches applied successfully!${NC}"
+echo -e "${GREEN}Patches applied successfully! Files copied: ${patch_count}${NC}"
