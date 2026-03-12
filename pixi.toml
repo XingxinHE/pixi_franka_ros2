@@ -38,6 +38,7 @@ ros-humble-moveit-kinematics = "*"
 ros-humble-moveit-planners-ompl = "*"
 ros-humble-moveit-ros-move-group = "*"
 ros-humble-rmw-cyclonedds-cpp = "*"
+ros-humble-rmw-zenoh-cpp = "*"
 ros-humble-ros2-control = "*"
 ros-humble-ros2-control-cmake = "*"
 ros-humble-ros2-controllers = "*"
@@ -53,6 +54,7 @@ ignore-gazebo = "touch src/franka_ros2/franka_gazebo/COLCON_IGNORE"
 build = "colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DBUILD_TESTS=OFF -DPython_ROOT_DIR=$CONDA_PREFIX -DPython3_ROOT_DIR=$CONDA_PREFIX -DPython_FIND_STRATEGY=LOCATION -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -Wno-dev"
 setup = { depends-on = ["clone", "update-libfranka", "verify-sources", "apply-patches", "ignore-gazebo", "build"] }
 franka = "ros2 launch scripts/launch/franka.launch.py"
+zenoh-router = "ros2 run rmw_zenoh_cpp rmw_zenohd"
 
 [feature.crisp.tasks]
 crisp-figure-eight = "python examples/crisp_figure_eight.py"
