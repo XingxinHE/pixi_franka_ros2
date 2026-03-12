@@ -21,3 +21,14 @@ pixi run -e humble franka robot_ip:=172.16.0.3 load_gripper:=true controllers_ya
 # Terminal 2
 pixi run -e humble python examples/crisp_figure_eight.py
 ```
+
+
+
+```bash
+# Switch controller mode
+# WARNING!! Stop the SpaceMouse publisher first before switching the controller
+pixi run -e humble ros2 control switch_controllers --activate cartesian_impedance_controller
+
+# Switch to joint impedance controller
+pixi run -e humble ros2 control switch_controllers --activate joint_impedance_controller
+```
