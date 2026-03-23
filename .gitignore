@@ -6,4 +6,5 @@ log
 install
 build
 src
+.cache/
 scripts/launch/__pycache__

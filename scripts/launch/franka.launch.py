@@ -70,7 +70,11 @@
 
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import (
+    DeclareLaunchArgument,
+    ExecuteProcess,
+    IncludeLaunchDescription,
+)
 from launch.actions import OpaqueFunction, Shutdown
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -78,6 +82,7 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 import xacro
+from pathlib import Path
 
 # Generates the "default" nodes (controller_manager, robot_state_publisher, etc.)
 # for the Franka robot. This function is called by the main launch file.
@@ -114,6 +119,9 @@ def generate_robot_nodes(context):
     ).toprettyxml(indent="  ")
 
     namespace = LaunchConfiguration("namespace").perform(context)
+    adapter_script = str(
+        (Path(__file__).resolve().parent.parent / "crisp_py_franka_hand_adapter.py")
+    )
 
     controllers_yaml = LaunchConfiguration("controllers_yaml").perform(context)
 
@@ -219,6 +227,16 @@ def generate_robot_nodes(context):
                     context
                 ),
             }.items(),
+            condition=IfCondition(LaunchConfiguration("load_gripper")),
+        ),
+        ExecuteProcess(
+            cmd=[
+                "python",
+                adapter_script,
+                "--namespace",
+                namespace,
+            ],
+            output="screen",
             condition=IfCondition(LaunchConfiguration("load_gripper")),
         ),
     ]

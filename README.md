@@ -17,6 +17,13 @@ pixi run -e humble setup
 pixi run -e humble franka robot_ip:=172.16.0.3 load_gripper:=true controllers_yaml:=config/controllers.yaml
 ```
 
+When `load_gripper:=true`, this launch now also starts a CRISP compatibility adapter that exposes:
+
+- `/gripper/joint_states`
+- `/gripper/gripper_position_controller/commands`
+
+bridged to Franka's native gripper interfaces.
+
 ```bash
 # Terminal 2
 pixi run -e humble python examples/crisp_figure_eight.py

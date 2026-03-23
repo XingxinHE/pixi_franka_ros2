@@ -1,6 +1,6 @@
 # This is a namespace agnostic configuration file for the Franka FR3 robot.
 # That is to say, it is not tied to any specific namespace and can be used in
-# any namespace. 
+# any namespace.
 # If you require namespace specific configurations, you can easily modify this
 # file to include the namespace
 # As an example, below you can find:
@@ -13,7 +13,7 @@
 #
 # Imagine, you have a specific need to have the lock try count in namespace "NAMESPACE_X"
 # to be different than the default value of 5, but leave all the other namespaces as default.
-# Add the following lines to the configuration file 
+# Add the following lines to the configuration file
 # (or use a different config file, but then you have to mody the launch script to reference that file)
 #
 # /NAMESPACE_X:
@@ -122,7 +122,7 @@
 /**:
   cartesian_velocity_example_controller:
     ros__parameters:
-      arm_id: "fr3"   
+      arm_id: "fr3"
 
 /**:
   elbow_example_controller:
@@ -142,18 +142,18 @@
     ros__parameters:
       lock_try_count: 5 # Number of attempts to acquire the lock in a single on_update()
       lock_sleep_interval: 5 # microseconds sleep between attempts
-      lock_log_error: true #  Log error if lock acquisition fails - false == do not log  
+      lock_log_error: true #  Log error if lock acquisition fails - false == do not log
       lock_update_success: true # return update OK, although lock fails (no update occurs)
 
 /**:
   gravity_compensation_example_controller:
     ros__parameters:
       arm_id: "fr3"
-      
+
 /**:
   joint_impedance_example_controller:
     ros__parameters:
-      arm_id: "fr3"    
+      arm_id: "fr3"
       k_gains:
         - 24.0
         - 24.0
@@ -219,7 +219,7 @@
   joint_velocity_example_controller:
     ros__parameters:
       arm_id: "fr3"
- 
+
 /**:
   model_example_controller:
     ros__parameters:
@@ -296,7 +296,7 @@
         k_rot_y: 30.0
         k_rot_z: 30.0
 
-      nullspace: 
+      nullspace:
         stiffness: 0.0
 
       use_friction: true
@@ -327,7 +327,7 @@
 
       max_delta_tau: 0.5
 
-      nullspace: 
+      nullspace:
         stiffness: 5.0
         projector_type: none  # So we are directly controlling the joints!
         damping: 0.5
@@ -369,15 +369,23 @@
         output_torque: 0.5
 
       task:
-        k_pos_x: 400.0
-        k_pos_y: 400.0
-        k_pos_z: 400.0
-        k_rot_x: 30.0
-        k_rot_y: 30.0
-        k_rot_z: 30.0
+        k_pos_x: 250.0
+        k_pos_y: 250.0
+        k_pos_z: 250.0
+        k_rot_x: 20.0
+        k_rot_y: 20.0
+        k_rot_z: 20.0
+        d_pos_x: 35.0
+        d_pos_y: 35.0
+        d_pos_z: 35.0
+        d_rot_x: 9.0
+        d_rot_y: 9.0
+        d_rot_z: 9.0
 
-      nullspace: 
-        stiffness: 2.0
+      nullspace:
+        stiffness: 8.0
+        damping: 5.0
+
 
       # log:
       #   enabled: true
@@ -397,10 +405,10 @@
         - fr3_joint5
         - fr3_joint6
         - fr3_joint7
-      
+
       end_effector_frame: fr3_hand_tcp
       base_frame: base
-      
+
       k_fb: 0.6
       kd: 0.1
       joint_source_topic: target_joint
