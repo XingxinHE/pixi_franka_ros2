@@ -17,6 +17,19 @@ pixi run -e humble setup
 pixi run -e humble franka robot_ip:=172.16.0.3 load_gripper:=true controllers_yaml:=config/controllers.yaml
 ```
 
+Dual FR3 bringup (leader/follower on same RT PC):
+
+```bash
+# Terminal 1
+pixi run -e humble franka-dual \
+  leader_robot_ip:=172.16.0.33 \
+  follower_robot_ip:=172.16.0.3 \
+  leader_namespace:=left \
+  follower_namespace:=right \
+  load_gripper:=true \
+  controllers_yaml:=config/controllers.yaml
+```
+
 When `load_gripper:=true`, this launch now also starts a CRISP compatibility adapter that exposes:
 
 - `/gripper/joint_states`
