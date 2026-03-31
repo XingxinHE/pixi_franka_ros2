@@ -1,19 +1,14 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from launch_ros.substitutions import FindPackageShare
+from launch.substitutions import LaunchConfiguration
+from pathlib import Path
 
 
 def _franka_include(namespace_arg: str, ip_arg: str, arm_prefix_arg: str):
+    local_franka_launch = str(Path(__file__).resolve().parent / "franka.launch.py")
     return IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [
-                PathJoinSubstitution(
-                    [FindPackageShare("franka_bringup"), "launch", "franka.launch.py"]
-                )
-            ]
-        ),
+        PythonLaunchDescriptionSource(local_franka_launch),
         launch_arguments={
             "arm_id": "fr3",
             "arm_prefix": LaunchConfiguration(arm_prefix_arg),
@@ -30,8 +25,10 @@ def generate_launch_description():
     launch_args = [
         DeclareLaunchArgument("leader_namespace", default_value="left"),
         DeclareLaunchArgument("follower_namespace", default_value="right"),
-        DeclareLaunchArgument("leader_arm_prefix", default_value="left"),
-        DeclareLaunchArgument("follower_arm_prefix", default_value="right"),
+        # Keep arm_prefix empty by default.
+        # We isolate robots by namespace, and controllers.yaml uses unprefixed FR3 joint names.
+        DeclareLaunchArgument("leader_arm_prefix", default_value=""),
+        DeclareLaunchArgument("follower_arm_prefix", default_value=""),
         DeclareLaunchArgument("leader_robot_ip", default_value="172.16.0.33"),
         DeclareLaunchArgument("follower_robot_ip", default_value="172.16.0.3"),
         DeclareLaunchArgument("load_gripper", default_value="true"),
