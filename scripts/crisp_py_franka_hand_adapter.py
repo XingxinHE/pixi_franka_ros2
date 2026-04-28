@@ -36,7 +36,11 @@ def _join_topic(namespace: str, relative: str) -> str:
 
 
 class CrispPyFrankaHandAdapter(Node):
-    def __init__(self, namespace: str = ""):
+    def __init__(
+        self,
+        namespace: str = "",
+        close_command: str = "grasp",
+    ):
         super().__init__("crisp_py_franka_hand_adapter")
         self._cb_group = ReentrantCallbackGroup()
 
@@ -60,6 +64,7 @@ class CrispPyFrankaHandAdapter(Node):
         self._force = 50.0
         self._epsilon_inner = 0.01
         self._epsilon_outer = 0.01
+        self._close_command = close_command
 
         self._current_width: float | None = None
         self._last_discrete_command: str | None = None
@@ -120,6 +125,7 @@ class CrispPyFrankaHandAdapter(Node):
                 else "<not available>",
             )
         )
+        self.get_logger().info("Close command mode: %s", self._close_command)
 
     def _wait_server(self, client: ActionClient | None, action_name: str) -> bool:
         if client is None:
@@ -169,9 +175,25 @@ class CrispPyFrankaHandAdapter(Node):
             return
 
         if should_close:
-            if not self._wait_server(self._grasp_client, self._franka_grasp_action):
-                return
-            self._send_grasp(self._close_width)
+            if self._close_command == "move":
+                if self._move_client is not None and self._wait_server(
+                    self._move_client, self._franka_move_action
+                ):
+                    self._send_move(self._close_width)
+                else:
+                    self.get_logger().warn(
+                        "Close command mode is 'move' but move action is unavailable; falling back to grasp.",
+                        throttle_duration_sec=2.0,
+                    )
+                    if not self._wait_server(
+                        self._grasp_client, self._franka_grasp_action
+                    ):
+                        return
+                    self._send_grasp(self._close_width)
+            else:
+                if not self._wait_server(self._grasp_client, self._franka_grasp_action):
+                    return
+                self._send_grasp(self._close_width)
         else:
             # Prefer Move action for opening; fallback to Grasp if Move is unavailable.
             if self._move_client is not None and self._wait_server(
@@ -264,10 +286,20 @@ def main() -> None:
     parser.add_argument(
         "--namespace", type=str, default="", help="Optional ROS namespace"
     )
+    parser.add_argument(
+        "--close-command",
+        type=str,
+        default="grasp",
+        choices=["grasp", "move"],
+        help="Use Franka grasp or move action for close commands.",
+    )
     args = parser.parse_args()
 
     rclpy.init()
-    node = CrispPyFrankaHandAdapter(namespace=args.namespace)
+    node = CrispPyFrankaHandAdapter(
+        namespace=args.namespace,
+        close_command=args.close_command,
+    )
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
