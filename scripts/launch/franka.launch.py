@@ -285,8 +285,6 @@ def generate_robot_nodes(context):
                 adapter_script,
                 "--namespace",
                 namespace,
-                "--close-command",
-                LaunchConfiguration("gripper_close_command").perform(context),
             ],
             output="screen",
             condition=IfCondition(LaunchConfiguration("load_gripper")),
@@ -325,11 +323,6 @@ def generate_launch_description():
             "load_gripper",
             default_value="false",
             description="Use Franka Gripper as an end-effector",
-        ),
-        DeclareLaunchArgument(
-            "gripper_close_command",
-            default_value="grasp",
-            description="Franka hand adapter close action: grasp or move",
         ),
         DeclareLaunchArgument(
             "use_fake_hardware", default_value="false", description="Use fake hardware"

@@ -15,7 +15,6 @@ def _franka_include(namespace_arg: str, ip_arg: str, arm_prefix_arg: str):
             "namespace": LaunchConfiguration(namespace_arg),
             "robot_ip": LaunchConfiguration(ip_arg),
             "load_gripper": LaunchConfiguration("load_gripper"),
-            "gripper_close_command": LaunchConfiguration("gripper_close_command"),
             "use_fake_hardware": LaunchConfiguration("use_fake_hardware"),
             "controllers_yaml": LaunchConfiguration("controllers_yaml"),
         }.items(),
@@ -33,7 +32,6 @@ def generate_launch_description():
         DeclareLaunchArgument("leader_robot_ip", default_value="172.16.0.33"),
         DeclareLaunchArgument("follower_robot_ip", default_value="172.16.0.3"),
         DeclareLaunchArgument("load_gripper", default_value="true"),
-        DeclareLaunchArgument("gripper_close_command", default_value="grasp"),
         DeclareLaunchArgument("use_fake_hardware", default_value="false"),
         DeclareLaunchArgument(
             "controllers_yaml", default_value="config/controllers.yaml"

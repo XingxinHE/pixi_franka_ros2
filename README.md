@@ -18,17 +18,6 @@ pixi run -e humble franka robot_ip:=172.16.0.3 load_gripper:=true controllers_ya
 pixi run -e humble franka robot_ip:=172.16.0.3 load_gripper:=false controllers_yaml:=config/controllers.yaml
 ```
 
-If a Franka gripper repeatedly logs `Gripper Grasping failed` on close commands,
-try the compatibility adapter in move-close mode:
-
-```bash
-pixi run -e humble franka \
-  robot_ip:=172.16.0.3 \
-  load_gripper:=true \
-  gripper_close_command:=move \
-  controllers_yaml:=config/controllers.yaml
-```
-
 Dual FR3 bringup (leader/follower on same RT PC):
 
 ```bash
@@ -39,7 +28,6 @@ pixi run -e humble franka-dual \
   leader_namespace:=left \
   follower_namespace:=right \
   load_gripper:=true \
-  gripper_close_command:=move \
   controllers_yaml:=config/controllers.yaml
 ```
 
@@ -50,12 +38,6 @@ When `load_gripper:=true`, this launch now also starts a CRISP compatibility ada
 
 bridged to Franka's native gripper interfaces.
 
-Notes:
-- `gripper_close_command:=grasp` is the default behavior.
-- `gripper_close_command:=move` is often more robust when you want simple close/open behavior instead of object-grasp semantics.
-- This issue is usually not caused by CRISP env config naming (`fr3` vs `fr3v2`); it happens after the command already reaches Franka's native gripper action server.
-`load_gripper` also selects the CRISP end-effector frame automatically:
-
 - `load_gripper:=true` keeps the controller end-effector at `fr3_hand_tcp`
 - `load_gripper:=false` switches the controller end-effector to the bare flange `fr3_link8`
 
@@ -64,8 +46,6 @@ If the Franka Hand is physically removed, use the same bringup command with `loa
 ```bash
 pixi run -e humble franka robot_ip:=172.16.0.3 load_gripper:=false controllers_yaml:=config/controllers.yaml
 ```
-
-
 ```bash
 # Terminal 2
 pixi run -e humble python examples/crisp_figure_eight.py
