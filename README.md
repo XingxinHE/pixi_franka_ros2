@@ -15,6 +15,7 @@ This repository pins upstream source repositories to:
 pixi install
 pixi run -e humble setup
 pixi run -e humble franka robot_ip:=172.16.0.3 load_gripper:=true controllers_yaml:=config/controllers.yaml
+pixi run -e humble franka robot_ip:=172.16.0.3 load_gripper:=false controllers_yaml:=config/controllers.yaml
 ```
 
 If a Franka gripper repeatedly logs `Gripper Grasping failed` on close commands,
@@ -53,6 +54,17 @@ Notes:
 - `gripper_close_command:=grasp` is the default behavior.
 - `gripper_close_command:=move` is often more robust when you want simple close/open behavior instead of object-grasp semantics.
 - This issue is usually not caused by CRISP env config naming (`fr3` vs `fr3v2`); it happens after the command already reaches Franka's native gripper action server.
+`load_gripper` also selects the CRISP end-effector frame automatically:
+
+- `load_gripper:=true` keeps the controller end-effector at `fr3_hand_tcp`
+- `load_gripper:=false` switches the controller end-effector to the bare flange `fr3_link8`
+
+If the Franka Hand is physically removed, use the same bringup command with `load_gripper:=false`:
+
+```bash
+pixi run -e humble franka robot_ip:=172.16.0.3 load_gripper:=false controllers_yaml:=config/controllers.yaml
+```
+
 
 ```bash
 # Terminal 2
@@ -68,4 +80,11 @@ pixi run -e humble ros2 control switch_controllers --activate cartesian_impedanc
 
 # Switch to joint impedance controller
 pixi run -e humble ros2 control switch_controllers --activate joint_impedance_controller
+
+# Switch to gravity compensation mode, i.e. make the robot kinaesthetic teaching
+pixi run -e humble ros2 control switch_controllers --activate gravity_compensation
 ```
+
+
+
+CRISP_VISER_EE=flange pixi run -e humble python examples/crisp_viser.py

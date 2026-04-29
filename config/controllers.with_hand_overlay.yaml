@@ -1,0 +1,24 @@
+/**:
+  twist_broadcaster:
+    ros__parameters:
+      end_effector_frame: fr3_hand_tcp
+
+  pose_broadcaster:
+    ros__parameters:
+      end_effector_frame: fr3_hand_tcp
+
+  gravity_compensation:
+    ros__parameters:
+      end_effector_frame: fr3_hand_tcp
+
+  joint_impedance_controller:
+    ros__parameters:
+      end_effector_frame: fr3_hand_tcp
+
+  cartesian_impedance_controller:
+    ros__parameters:
+      end_effector_frame: fr3_hand_tcp
+
+  torque_feedback_controller:
+    ros__parameters:
+      end_effector_frame: fr3_hand_tcp

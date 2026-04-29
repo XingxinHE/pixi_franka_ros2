@@ -1,0 +1,24 @@
+/**:
+  twist_broadcaster:
+    ros__parameters:
+      end_effector_frame: fr3_link8
+
+  pose_broadcaster:
+    ros__parameters:
+      end_effector_frame: fr3_link8
+
+  gravity_compensation:
+    ros__parameters:
+      end_effector_frame: fr3_link8
+
+  joint_impedance_controller:
+    ros__parameters:
+      end_effector_frame: fr3_link8
+
+  cartesian_impedance_controller:
+    ros__parameters:
+      end_effector_frame: fr3_link8
+
+  torque_feedback_controller:
+    ros__parameters:
+      end_effector_frame: fr3_link8

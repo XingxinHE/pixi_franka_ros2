@@ -72,6 +72,9 @@ pytest = "*"  # for testing
 [feature.extra.pypi-dependencies]
 rich = "*"  # For nice prints
 matplotlib = "*"  # to do some plots
+viser = ">=1.0.19, <2"
+robot-descriptions = ">=1.22.0, <2"
+yourdfpy = ">=0.0.58, <0.0.59"
 
 [feature.crisp.pypi-dependencies]
 crisp-python = ">=3.0.0,<4"

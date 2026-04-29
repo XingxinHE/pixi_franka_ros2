@@ -84,6 +84,41 @@ from launch_ros.substitutions import FindPackageShare
 import xacro
 from pathlib import Path
 
+PACKAGE_ROOT = Path(__file__).resolve().parents[2]
+CONFIG_DIR = PACKAGE_ROOT / "config"
+
+
+def resolve_robot_type(arm_id: str, urdf_file: str) -> str:
+    if arm_id:
+        return arm_id
+
+    urdf_name = Path(urdf_file).name
+    robot_type = urdf_name.removesuffix(".urdf.xacro").removesuffix(".xacro")
+    if robot_type:
+        return robot_type
+
+    parent_name = Path(urdf_file).parent.name
+    return parent_name or "fr3"
+
+
+def get_controller_overlay_path(load_gripper: bool) -> str:
+    overlay_name = (
+        "controllers.with_hand_overlay.yaml"
+        if load_gripper
+        else "controllers.bare_flange_overlay.yaml"
+    )
+    overlay_path = CONFIG_DIR / overlay_name
+    if not overlay_path.is_file():
+        raise FileNotFoundError(f"Controller overlay file not found: {overlay_path}")
+    return str(overlay_path)
+
+
+def resolve_controller_parameter_files(
+    controllers_yaml: str, load_gripper: bool
+) -> list[str]:
+    return [controllers_yaml, get_controller_overlay_path(load_gripper)]
+
+
 # Generates the "default" nodes (controller_manager, robot_state_publisher, etc.)
 # for the Franka robot. This function is called by the main launch file.
 # It uses the xacro library to process the URDF file and generate the robot description.
@@ -94,18 +129,21 @@ def generate_robot_nodes(context):
         context
     )
     load_gripper = load_gripper_launch_configuration.lower() == "true"
+    arm_id = LaunchConfiguration("arm_id").perform(context)
+    urdf_file = LaunchConfiguration("urdf_file").perform(context)
+    robot_type = resolve_robot_type(arm_id, urdf_file)
     urdf_path = PathJoinSubstitution(
         [
             FindPackageShare("franka_description"),
             "robots",
-            LaunchConfiguration("urdf_file"),
+            urdf_file,
         ]
     ).perform(context)
     robot_description = xacro.process_file(
         urdf_path,
         mappings={
             "ros2_control": "true",
-            "arm_id": LaunchConfiguration("arm_id").perform(context),
+            "arm_id": arm_id,
             "arm_prefix": LaunchConfiguration("arm_prefix").perform(context),
             "robot_ip": LaunchConfiguration("robot_ip").perform(context),
             "hand": load_gripper_launch_configuration,
@@ -124,6 +162,9 @@ def generate_robot_nodes(context):
     )
 
     controllers_yaml = LaunchConfiguration("controllers_yaml").perform(context)
+    controller_parameter_files = resolve_controller_parameter_files(
+        controllers_yaml, load_gripper
+    )
 
     joint_state_publisher_sources = [
         "franka/joint_states",
@@ -143,8 +184,8 @@ def generate_robot_nodes(context):
             package="controller_manager",
             executable="ros2_control_node",
             namespace=namespace,
-            parameters=[
-                controllers_yaml,
+            parameters=controller_parameter_files
+            + [
                 {"robot_description": robot_description},
                 {"load_gripper": load_gripper},
             ],
@@ -171,6 +212,15 @@ def generate_robot_nodes(context):
             executable="spawner",
             namespace=namespace,
             arguments=["joint_state_broadcaster"],
+            output="screen",
+        ),
+        Node(
+            package="controller_manager",
+            executable="spawner",
+            namespace=namespace,
+            arguments=["franka_robot_state_broadcaster"],
+            parameters=[{"robot_type": robot_type}],
+            condition=UnlessCondition(LaunchConfiguration("use_fake_hardware")),
             output="screen",
         ),
         Node(
