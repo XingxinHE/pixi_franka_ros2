@@ -8,6 +8,9 @@ platforms = ["linux-64"]
 [activation]
 scripts = ["scripts/set_ros_env.sh", "install/setup.bash"]
 
+[activation.env]
+ZENOH_SESSION_CONFIG_URI="./configs/zenoh_client.json5"
+
 [dependencies]
 python = "*"
 compilers = "*"
