@@ -59,7 +59,10 @@ class CrispPyFrankaHandAdapter(Node):
         self._speed = 0.1
         self._force = 50.0
         self._epsilon_inner = 0.01
-        self._epsilon_outer = 0.01
+        # CRISP close is binary: close until contact. Franka Grasp reports
+        # success only when actual_width <= goal.width + epsilon.outer, so a
+        # width=0 close needs outer tolerance large enough for grasped objects.
+        self._epsilon_outer = self._open_width
 
         self._current_width: float | None = None
         self._last_discrete_command: str | None = None
@@ -171,26 +174,28 @@ class CrispPyFrankaHandAdapter(Node):
         if should_close:
             if not self._wait_server(self._grasp_client, self._franka_grasp_action):
                 return
-            self._send_grasp(self._close_width)
+            command_sent = self._send_grasp(self._close_width)
         else:
             # Prefer Move action for opening; fallback to Grasp if Move is unavailable.
             if self._move_client is not None and self._wait_server(
                 self._move_client, self._franka_move_action
             ):
-                self._send_move(self._open_width)
+                command_sent = self._send_move(self._open_width)
             else:
                 if not self._wait_server(self._grasp_client, self._franka_grasp_action):
                     return
-                self._send_grasp(self._open_width)
-        self._last_discrete_command = discrete_command
+                command_sent = self._send_grasp(self._open_width)
 
-    def _send_grasp(self, width: float) -> None:
+        if command_sent:
+            self._last_discrete_command = discrete_command
+
+    def _send_grasp(self, width: float) -> bool:
         if self._goal_in_flight:
             self.get_logger().warn(
                 "Previous gripper goal still in flight; dropping command.",
                 throttle_duration_sec=1.0,
             )
-            return
+            return False
 
         goal = Grasp.Goal()
         goal.width = width
@@ -202,16 +207,17 @@ class CrispPyFrankaHandAdapter(Node):
         self._goal_in_flight = True
         future = self._grasp_client.send_goal_async(goal)
         future.add_done_callback(self._goal_response_callback)
+        return True
 
-    def _send_move(self, width: float) -> None:
+    def _send_move(self, width: float) -> bool:
         if self._goal_in_flight:
             self.get_logger().warn(
                 "Previous gripper goal still in flight; dropping command.",
                 throttle_duration_sec=1.0,
             )
-            return
+            return False
         if self._move_client is None or Move is None:
-            return
+            return False
 
         goal = Move.Goal()
         goal.width = width
@@ -220,6 +226,7 @@ class CrispPyFrankaHandAdapter(Node):
         self._goal_in_flight = True
         future = self._move_client.send_goal_async(goal)
         future.add_done_callback(self._goal_response_callback)
+        return True
 
     def _goal_response_callback(self, future) -> None:  # noqa: ANN001
         try:
@@ -251,10 +258,16 @@ class CrispPyFrankaHandAdapter(Node):
             self.get_logger().warn(f"Franka gripper result retrieval failed: {exc}")
             return
 
-        if result_msg is None or not getattr(result_msg.result, "success", False):
+        result = getattr(result_msg, "result", None)
+        if result is None or not getattr(result, "success", False):
             self._last_discrete_command = None
+            error = (
+                getattr(result, "error", "<no result>")
+                if result is not None
+                else "<no result>"
+            )
             self.get_logger().warn(
-                "Franka gripper action reported failure; command state reset.",
+                f"Franka gripper action reported failure: {error}; command state reset.",
                 throttle_duration_sec=1.0,
             )
 
