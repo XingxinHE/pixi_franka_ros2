@@ -2,7 +2,8 @@
 authors = ["Daniel San José Pro <42489409+danielsanjosepro@users.noreply.github.com>"]
 name = "franka_ros2_pixi"
 version = "0.1.0"
-channels = ["robostack-humble", "conda-forge"]
+# Workspace-level channels provide the default package indexes for all environments.
+channels = ["robostack-jazzy", "conda-forge"]
 platforms = ["linux-64"]
 
 [activation]
@@ -20,31 +21,32 @@ ninja = "*"
 libgl-devel = "*"
 
 [environments]
-humble = { features = ["humble", "dev", "extra", "crisp"] }
+jazzy = { features = ["jazzy", "dev", "extra", "crisp"] }
 
-# humble
-[feature.humble]
-channels = ["https://prefix.dev/robostack-humble"]
+# jazzy
+[feature.jazzy]
+# Feature-level channels scope the ROS distro-specific index to this environment.
+channels = ["https://prefix.dev/robostack-jazzy"]
 
-[feature.humble.dependencies]
+[feature.jazzy.dependencies]
 colcon-common-extensions = "*"
 pinocchio = ">=3.7.0,<4"
 poco = ">=1.14.2,<2"
-ros-humble-ament-clang-format = "*"
-ros-humble-desktop = "*"
-ros-humble-joint-state-publisher = "*"
-ros-humble-moveit-core = "*"
-ros-humble-moveit-kinematics = "*"
-ros-humble-moveit-planners-ompl = "*"
-ros-humble-moveit-ros-move-group = "*"
-ros-humble-rmw-cyclonedds-cpp = "*"
-ros-humble-ros2-control = "*"
-ros-humble-ros2-control-cmake = "*"
-ros-humble-ros2-controllers = "*"
-ros-humble-xacro = "*"
+ros-jazzy-ament-clang-format = "*"
+ros-jazzy-desktop = "*"
+ros-jazzy-joint-state-publisher = "*"
+ros-jazzy-moveit-core = "*"
+ros-jazzy-moveit-kinematics = "*"
+ros-jazzy-moveit-planners-ompl = "*"
+ros-jazzy-moveit-ros-move-group = "*"
+ros-jazzy-rmw-cyclonedds-cpp = "*"
+ros-jazzy-ros2-control = "*"
+ros-jazzy-ros2-control-cmake = "*"
+ros-jazzy-ros2-controllers = "*"
+ros-jazzy-xacro = "*"
 rosdep = "*"
 
-[feature.humble.tasks]
+[feature.jazzy.tasks]
 clone = "bash scripts/clone_sources.sh"
 verify-sources = "bash scripts/verify_sources.sh"
 update-libfranka = "cd src/libfranka && git submodule update --init --recursive && cd ../../"

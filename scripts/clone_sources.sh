@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# Clone pinned upstream repositories into src/ so this workspace can build Franka
+# packages from source and apply local patches reproducibly.
+
 clone_or_checkout_tag() {
   local repo_path="$1"
   local repo_url="$2"

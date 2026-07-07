@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# Verify src/ repositories stay on the exact pinned tags expected by this workspace
+# before patches and colcon builds run.
+
 repos=(
   "src/franka_ros2 v2.2.0"
   "src/libfranka 0.19.0"
