@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // modified ros2 control semantic control interface to add command interface access.
-// https://github.com/ros-controls/ros2_control/blob/humble/controller_interface/include/semantic_components/semantic_component_interface.hpp
+// https://github.com/ros-controls/ros2_control/blob/jazzy/controller_interface/include/semantic_components/semantic_component_interface.hpp
 
 #pragma once
 
