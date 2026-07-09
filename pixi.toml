@@ -64,6 +64,9 @@ zenoh-router = "ros2 run rmw_zenoh_cpp rmw_zenohd"
 crisp-figure-eight = "python examples/crisp_figure_eight.py"
 crisp-teleop = "python examples/crisp_teleop.py"
 
+[feature.crisp.dependencies]
+numpy=">2.0.0,<=2.3.0"
+
 [feature.dev.pypi-dependencies]
 ruff= "*"
 bumpver = "*"
