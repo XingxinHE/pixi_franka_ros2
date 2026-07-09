@@ -3,10 +3,10 @@
 set -euo pipefail
 
 repos=(
-  "src/franka_ros2 v2.2.0"
-  "src/libfranka 0.19.0"
-  "src/franka_description 1.3.0"
-  "src/crisp_controllers v2.1.0"
+  "src/franka_ros2 v3.3.0"
+  "src/libfranka 0.20.4"
+  "src/franka_description 2.7.1"
+  "src/crisp_controllers v2.3.0"
 )
 
 fail_count=0

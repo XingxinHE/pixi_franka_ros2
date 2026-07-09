@@ -31,6 +31,7 @@ channels = ["https://prefix.dev/robostack-jazzy"]
 
 [feature.jazzy.dependencies]
 colcon-common-extensions = "*"
+libfranka = ">=0.20.4,<0.21"
 pinocchio = ">=3.7.0,<4"
 poco = ">=1.14.2,<2"
 ros-jazzy-ament-clang-format = "*"
@@ -63,6 +64,9 @@ zenoh-router = "ros2 run rmw_zenoh_cpp rmw_zenohd"
 [feature.crisp.tasks]
 crisp-figure-eight = "python examples/crisp_figure_eight.py"
 crisp-teleop = "python examples/crisp_teleop.py"
+
+[feature.crisp.dependencies]
+numpy = ">=2,<=2.3"
 
 [feature.dev.pypi-dependencies]
 ruff= "*"

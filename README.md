@@ -3,10 +3,10 @@
 
 This repository pins upstream source repositories to:
 
-- `franka_ros2`: `v2.2.0`
-- `libfranka`: `0.19.0`
-- `franka_description`: `1.3.0`
-- `crisp_controllers`: `v2.1.0`
+- `franka_ros2`: `v3.3.0`
+- `libfranka`: `0.20.4`
+- `franka_description`: `2.7.1`
+- `crisp_controllers`: `v2.3.0`
 
 ## Get Started
 

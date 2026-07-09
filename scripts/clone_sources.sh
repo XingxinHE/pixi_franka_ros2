@@ -31,7 +31,7 @@ clone_or_checkout_tag() {
   echo "[clone] ${repo_path} -> tag=$(git -C "${repo_path}" describe --tags --exact-match) sha=$(git -C "${repo_path}" rev-parse HEAD)"
 }
 
-clone_or_checkout_tag "src/franka_ros2" "https://github.com/frankarobotics/franka_ros2.git" "v2.2.0"
-clone_or_checkout_tag "src/franka_description" "https://github.com/frankarobotics/franka_description.git" "1.3.0"
-clone_or_checkout_tag "src/libfranka" "https://github.com/frankarobotics/libfranka.git" "0.19.0" "true"
-clone_or_checkout_tag "src/crisp_controllers" "https://github.com/utiasdsl/crisp_controllers.git" "v2.1.0"
+clone_or_checkout_tag "src/franka_ros2" "https://github.com/frankarobotics/franka_ros2.git" "v3.3.0"
+clone_or_checkout_tag "src/franka_description" "https://github.com/frankarobotics/franka_description.git" "2.7.1"
+clone_or_checkout_tag "src/libfranka" "https://github.com/frankarobotics/libfranka.git" "0.20.4" "true"
+clone_or_checkout_tag "src/crisp_controllers" "https://github.com/utiasdsl/crisp_controllers.git" "v2.3.0"
