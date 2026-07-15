@@ -15,6 +15,7 @@ This repository pins upstream source repositories to:
 pixi install
 pixi run -e jazzy setup
 pixi run -e jazzy franka robot_ip:=172.16.0.3 load_gripper:=true controllers_yaml:=config/controllers.yaml
+pixi run -e jazzy franka robot_ip:=172.16.0.33 load_gripper:=true controllers_yaml:=config/controllers.yaml
 pixi run -e jazzy franka robot_ip:=172.16.0.55 load_gripper:=true controllers_yaml:=config/controllers.yaml
 pixi run -e jazzy franka robot_ip:=172.16.0.3 load_gripper:=false controllers_yaml:=config/controllers.yaml
 ```
