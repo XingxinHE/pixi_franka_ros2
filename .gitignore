@@ -9,3 +9,6 @@ build
 src
 .cache/
 scripts/launch/__pycache__
+
+# environment variable
+.env
