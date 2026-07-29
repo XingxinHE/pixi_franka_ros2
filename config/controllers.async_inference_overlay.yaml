@@ -1,0 +1,91 @@
+/**:
+  cartesian_impedance_controller:
+    ros__parameters:
+      use_operational_space: false
+      operational_space_regularization: 0.01
+
+      task:
+        k_pos_x: 250.0
+        k_pos_y: 250.0
+        k_pos_z: 250.0
+        k_rot_x: 20.0
+        k_rot_y: 20.0
+        k_rot_z: 20.0
+        d_pos_x: 35.0
+        d_pos_y: 35.0
+        d_pos_z: 35.0
+        d_rot_x: 9.0
+        d_rot_y: 9.0
+        d_rot_z: 9.0
+        error_clip:
+          x: 0.1
+          y: 0.1
+          z: 0.1
+          rx: 0.5
+          ry: 0.5
+          rz: 0.5
+
+      nullspace:
+        stiffness: 8.0
+        damping: 5.0
+        projector_type: kinematic
+        regularization: 1.0e-06
+        max_tau: 5.0
+        weights:
+          fr3_joint1.value: 1.0
+          fr3_joint2.value: 1.0
+          fr3_joint3.value: 1.0
+          fr3_joint4.value: 1.0
+          fr3_joint5.value: 1.0
+          fr3_joint6.value: 1.0
+          fr3_joint7.value: 1.0
+
+      filter:
+        target_pose: 0.1
+        q: 0.5
+        dq: 0.5
+        q_ref: 0.5
+        output_torque: 0.5
+
+      limit_error: true
+      limit_torques: true
+      max_delta_tau: 0.5
+      stop_commands: false
+
+      log:
+        enabled: false
+        robot_state: false
+        control_values: false
+        limits: false
+        controller_parameters: false
+        computed_torques: false
+        dynamic_params: false
+        timing: false
+      enable_introspection: false
+
+      noise:
+        add_random_noise: false
+        amplitude: 0.0
+      use_friction: false
+      use_coriolis_compensation: true
+      use_gravity_compensation: false
+      use_local_jacobian: true
+
+      joint_limit_repulsion:
+        enabled: true
+        safe_range: 0.1
+        max_torque: 5.0
+
+      variable_max_stiffness:
+        translational: 900.0
+        rotational: 60.0
+      variable_stiffness:
+        enabled: false
+        topic: target_stiffness
+
+      async_inference_watchdog:
+        enabled: true
+        timeout_seconds: 0.25
+        heartbeat_topic: async_inference_heartbeat
+        ack_topic: async_inference_watchdog_ack
+        status_topic: async_inference_watchdog_status

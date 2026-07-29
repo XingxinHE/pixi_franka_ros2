@@ -7,7 +7,10 @@ log
 install
 build
 src
+!patches/crisp_controllers/src/
+!patches/crisp_controllers/src/**
 .cache/
+__pycache__/
 scripts/launch/__pycache__
 
 # environment variable

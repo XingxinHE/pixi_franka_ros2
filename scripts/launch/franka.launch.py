@@ -23,6 +23,7 @@
 # use_fake_hardware: Use fake hardware (default: 'false')
 # fake_sensor_commands: Fake sensor commands (default: 'false')
 # joint_state_rate: Rate for joint state publishing in Hz (default: '30')
+# controller_profile_yaml: Optional controller parameter overlay (default: '')
 #
 # The franka.launch.py launch file provides a robust and flexible interface
 # for launching core Franka Robotics components, including robot_state_publisher,
@@ -114,9 +115,20 @@ def get_controller_overlay_path(load_gripper: bool) -> str:
 
 
 def resolve_controller_parameter_files(
-    controllers_yaml: str, load_gripper: bool
+    controllers_yaml: str,
+    load_gripper: bool,
+    controller_profile_yaml: str = "",
 ) -> list[str]:
-    return [controllers_yaml, get_controller_overlay_path(load_gripper)]
+    parameter_files = [controllers_yaml]
+    if controller_profile_yaml:
+        profile_path = Path(controller_profile_yaml)
+        if not profile_path.is_file():
+            raise FileNotFoundError(
+                f"Controller profile file not found: {profile_path}"
+            )
+        parameter_files.append(str(profile_path))
+    parameter_files.append(get_controller_overlay_path(load_gripper))
+    return parameter_files
 
 
 # Generates the "default" nodes (controller_manager, robot_state_publisher, etc.)
@@ -162,8 +174,11 @@ def generate_robot_nodes(context):
     )
 
     controllers_yaml = LaunchConfiguration("controllers_yaml").perform(context)
+    controller_profile_yaml = LaunchConfiguration("controller_profile_yaml").perform(
+        context
+    )
     controller_parameter_files = resolve_controller_parameter_files(
-        controllers_yaml, load_gripper
+        controllers_yaml, load_gripper, controller_profile_yaml
     )
 
     joint_state_publisher_sources = [
@@ -343,6 +358,11 @@ def generate_launch_description():
                 [FindPackageShare("franka_bringup"), "config", "controllers.yaml"]
             ),
             description="Override the default controllers.yaml file.",
+        ),
+        DeclareLaunchArgument(
+            "controller_profile_yaml",
+            default_value="",
+            description="Optional controller parameter overlay loaded after controllers_yaml.",
         ),
     ]
 

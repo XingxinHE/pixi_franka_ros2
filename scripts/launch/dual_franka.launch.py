@@ -17,6 +17,7 @@ def _franka_include(namespace_arg: str, ip_arg: str, arm_prefix_arg: str):
             "load_gripper": LaunchConfiguration("load_gripper"),
             "use_fake_hardware": LaunchConfiguration("use_fake_hardware"),
             "controllers_yaml": LaunchConfiguration("controllers_yaml"),
+            "controller_profile_yaml": LaunchConfiguration("controller_profile_yaml"),
         }.items(),
     )
 
@@ -36,6 +37,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "controllers_yaml", default_value="config/controllers.yaml"
         ),
+        DeclareLaunchArgument("controller_profile_yaml", default_value=""),
     ]
 
     leader = _franka_include("leader_namespace", "leader_robot_ip", "leader_arm_prefix")
