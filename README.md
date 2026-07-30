@@ -76,7 +76,10 @@ controller consumes a strictly increasing heartbeat. Each accepted heartbeat
 is acknowledged on `async_inference_watchdog_ack`; timeout establishes a
 measured-pose hold and remains latched until the Cartesian controller is
 lifecycle-reactivated. The Robofab preflight rejects a missing or changed
-profile and any competing heartbeat publisher.
+profile and any competing heartbeat publisher. Loaded but inactive
+`gravity_compensation` and `joint_impedance_controller` instances use isolated
+watchdog topics so their plugin endpoints cannot interfere with the active
+Cartesian controller's status or acknowledgement.
 
 - `load_gripper:=true` keeps the controller end-effector at `fr3_hand_tcp`
 - `load_gripper:=false` switches the controller end-effector to the bare flange `fr3_link8`

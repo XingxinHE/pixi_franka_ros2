@@ -180,6 +180,29 @@ def test_inserts_async_profile_before_end_effector_overlay():
     }
 
 
+@pytest.mark.parametrize(
+    "controller_name",
+    ("gravity_compensation", "joint_impedance_controller"),
+)
+def test_async_profile_isolates_disabled_controller_watchdog_topics(
+    controller_name,
+):
+    controllers = yaml.safe_load(
+        ASYNC_CONTROLLER_PROFILE.read_text(encoding="utf-8")
+    )["/**"]
+
+    watchdog = controllers[controller_name]["ros__parameters"][
+        "async_inference_watchdog"
+    ]
+
+    assert watchdog == {
+        "enabled": False,
+        "heartbeat_topic": f"{controller_name}/async_inference_heartbeat",
+        "ack_topic": f"{controller_name}/async_inference_watchdog_ack",
+        "status_topic": f"{controller_name}/async_inference_watchdog_status",
+    }
+
+
 def test_rejects_missing_controller_profile(tmp_path):
     launch_module = load_launch_module()
     missing_profile = tmp_path / "missing-controller-profile.yaml"

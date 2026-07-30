@@ -89,3 +89,22 @@
         heartbeat_topic: async_inference_heartbeat
         ack_topic: async_inference_watchdog_ack
         status_topic: async_inference_watchdog_status
+
+  # These controllers use the same CartesianController plugin and therefore
+  # create watchdog endpoints while loaded, even though their watchdogs remain
+  # disabled. Keep those endpoints off the active controller's authority topics.
+  gravity_compensation:
+    ros__parameters:
+      async_inference_watchdog:
+        enabled: false
+        heartbeat_topic: gravity_compensation/async_inference_heartbeat
+        ack_topic: gravity_compensation/async_inference_watchdog_ack
+        status_topic: gravity_compensation/async_inference_watchdog_status
+
+  joint_impedance_controller:
+    ros__parameters:
+      async_inference_watchdog:
+        enabled: false
+        heartbeat_topic: joint_impedance_controller/async_inference_heartbeat
+        ack_topic: joint_impedance_controller/async_inference_watchdog_ack
+        status_topic: joint_impedance_controller/async_inference_watchdog_status
